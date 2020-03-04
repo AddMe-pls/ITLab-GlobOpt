@@ -7,6 +7,8 @@ using namespace std;
 
 void TPiyavskogoMethod::FirstIteration()
 {
+	pTask = new TTask();
+
 	Trials[0].x = pTask.A;
 	Trials[1].x = pTask.B;
 	Trials[0].FuncValue = func(a_);
@@ -38,9 +40,9 @@ void TPiyavskogoMethod::CalculateIterationPoint()
 }
 
 
-bool TPiyavskogoMethod::CheckStopCondition()
+bool TPiyavskogoMethod::CheckStopCondition()//я бы написал если бы структуру передать можно было в параметрах
 {
-
+	if (TTrial. )
 
 
 }
@@ -48,7 +50,7 @@ bool TPiyavskogoMethod::CheckStopCondition()
 bool TPiyavskogoMethod::UpdateOptimumEstimation(const TTrial& trial)
 {
 	TTrial CurTrial;
-	int t = 1;//тк имеем один интервал
+	int t = 1;//тк имеем один интервал                                                             вероятно это все не в этой функции должно происходить    
 	int T = 1;//номер лучшего
 	do
 	{
@@ -63,13 +65,16 @@ bool TPiyavskogoMethod::UpdateOptimumEstimation(const TTrial& trial)
 			}
 		}
 		t++;//колич интервалов		
-		CurTrial.x = 0.5*(Trials[T].x + Trials[T - 1].x) - (Trials[T].FuncValue - Trials[T - 1].FuncValue) / (2 * m); //куда m пихнуть чтобы взять потом
+		CurTrial.x = 0.5*(Trials[T].x + Trials[T - 1].x) - (Trials[T].FuncValue - Trials[T - 1].FuncValue) / (2 * M); //это наверное  в CalculateIterationPoint
 		CurTrial.FuncValue = func(CurTrial.x);
 		CurTrial.IterationNumber;
 		Trials.insert(Trials.begin() + T, CurTrial);
 	} while (CheckStopCondition()); //tmp.k < MaxTrial_ && fabs(Trials[T].x - searchInfo[T - 1].x) > eps
 
 }
+
+
+
 
 
 
