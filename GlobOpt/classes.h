@@ -1,3 +1,5 @@
+#include <vector>
+
 /**
 Базовый класс-интерфейс, от которого наследуются классы, описывающие задачи оптимизации.
 
@@ -43,7 +45,7 @@ public:
 	virtual double CalculateFunction(const double y) const = 0;
 
 	///Деструктор
-	virtual ~IProblem() = 0;
+	virtual ~IProblem() {}
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -77,8 +79,24 @@ protected:
 	bool       IsOptimumPointDefined;
 
 public:
-	TTask(IProblem* _problem);
-	virtual ~TTask();
+	TTask(IProblem* _problem)
+	{
+		pProblem = _problem;
+		pProblem->GetBounds(A, B);
+		if (pProblem->GetOptimumPoint(OptimumPoint) == IProblem::OK)
+		{
+			IsOptimumPointDefined = true;
+		}
+		if (pProblem->GetOptimumValue(OptimumValue) == IProblem::OK)
+		{
+			IsOptimumValueDefined = true;
+		}
+
+	}
+	virtual ~TTask()
+	{
+
+	}
 
 	/// Возвращает левую границу области поиска
 	const double GetA() const { return A; }
