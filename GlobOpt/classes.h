@@ -217,7 +217,7 @@ public:
 
 	\return текущее испытание
 	*/
-	virtual TTrial GetCurTrials() = 0;
+	virtual TTrial GetCurTrial() = 0;
 	/** Установить границы области поиска
 	*/
 	virtual void SetBounds() = 0;
@@ -229,7 +229,7 @@ public:
 	virtual int GetNumberOfTrials() = 0;
 	///Получить номер итерации с наилучшим решением
 	virtual int GetBestTrialIteration() = 0;
-	/**Записывает точки испытаний в файл
+	/**Функция записывает точки испытаний в файл
 
 	\param[in] fileName имя файла, в который будут записаны точки
 	*/
@@ -239,114 +239,3 @@ public:
 	virtual double GetAchievedAccuracy() = 0;
 };
 
-
-/**
-Алгоритм глобального поиска
-
-В классе #IMethod объявлены основные функции, определяющие работу характеристического алгоритма.
-*/
-class TStronginMethod : public IMethod
-{
-protected:
-	/** Вычисление характеристики интервала
-
-	\param[in] p указатель на интервал, характеристику которого надо вычислить
-	\return Характеристика интервала
-	*/
-	virtual double CalculateR(int p) = 0;
-	/** Вычисление оценки константы Липшица
-
-	Обновленная оценка константы Липшица записывается в базе алгоритма
-	\param[in] p указатель на интервал
-	*/
-	virtual void CalculateM(int p) = 0;
-
-	/** Обновление текущей оценки оптимума
-
-	Если переданная точка лучше текущей оценки оптимума, то эта оценка обновляется и поднимается флаг #recalc.
-	\param[in] trial точка, которую необходимо сравнить с текущим оптимумом
-	\return true, если оптимум обновлён, иначе false
-	*/
-	virtual bool UpdateOptimumEstimation(const TTrial& trial) = 0;
-
-	/// Проверяет попала ли точка в окрестность глобального манимума
-	virtual bool CheckOptimumPoint(const TTrial& trial) = 0;
-
-public:
-
-	/** Функция выполняет первую итерацию метода
-	*/
-	virtual void FirstIteration() = 0;
-	/** Функция вызывается в начале проведения итерации
-	*/
-	virtual void InitIteration() = 0;
-	/** Вычисления точки очередной итерации
-
-	Результат записывается в CurTrial
-	*/
-	virtual void CalculateIterationPoint() = 0;
-	/** Проверка выполнения критерия остановки метода
-
-	Метод прекращает работу в следующих случаях:
-	- число испытаний превысило максимально допустимое значение
-	- если решается одна задача и выполнен критерий \f$ x_t - x_{t-1} < \epsilon \f$
-	- если решается серия задач и выполнен критерий \f$ \| y^k - y^\ast \| < \epsilon \f$
-
-	\return истина, если критерий остановки выполнен; ложь - в противном случае.
-	*/
-	virtual bool CheckStopCondition() = 0;
-
-	/** Вычисление функций задачи
-
-	Проводится испытание в точке из CurTrial, результат	записываются туда же
-	*/
-	virtual void CalculateFunction() = 0;
-	/** Обновление поисковой информации
-	*/
-	virtual void RenewSearchData() = 0;
-	/** Оценить текущее значение оптимума
-
-	\return истина, если оптимум изменился; ложь - в противном случае
-	*/
-	virtual bool EstimateOptimum() = 0;
-	/** Функция вызывается в конце проведения итерации
-	*/
-	virtual void FinalizeIteration() = 0;
-	/** Получить число испытаний
-
-	\return число испытаний
-	*/
-	virtual int GetIterationCount() = 0;
-	/** Получить текущую оценку оптимума
-
-	\return испытание, соответствующее текущему оптимуму
-	*/
-	virtual TTrial GetOptimEstimation() = 0;
-	/** Получить текущее испытание
-
-	\return текущее испытание
-	*/
-	virtual TTrial GetCurTrials() = 0;
-	/** Установить границы области поиска
-	*/
-	virtual void SetBounds() = 0;
-	/**Сбор статистики
-
-	Функция возвращает общее число испытаний, выполненных при решении текущей задачи
-	\return общее число испытаний
-	*/
-	virtual int GetNumberOfTrials() = 0;
-	///Получить номер итерации с наилучшим решением
-	virtual int GetBestTrialIteration() = 0;
-	///Получить оценку константы Липшица
-	virtual const double GetM() = 0;
-
-	/**Записывает точки испытаний в файл
-
-	\param[in] fileName имя файла, в который будут записаны точки
-	*/
-	virtual void PrintPoints(const std::string& fileName) = 0;
-
-	/// Возвращает достигнутую точность
-	virtual double GetAchievedAccuracy() = 0;
-};
