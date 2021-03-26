@@ -1,4 +1,7 @@
 #include <vector>
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
 
 /**
 Базовый класс-интерфейс, от которого наследуются классы, описывающие задачи оптимизации.
@@ -22,7 +25,7 @@ public:
 	virtual int Initialize() = 0;
 
 	/// Метод возвращает границы области поиска
-	virtual void GetBounds(double& lower, double& upper) = 0;
+	virtual void GetBounds(double& lower, double& upper)=0;
 	/** Метод возвращает значение функции в точке глобального минимума
 	\param[out] value оптимальное значение
 	\return Код ошибки (#OK или #UNDEFINED)
@@ -137,6 +140,18 @@ protected:
 	///
 	std::vector<TTrial> Trials;
 
+	TTrial CurTrial;
+
+	TTrial BestTrial;
+
+	int t;
+
+	double eps;
+
+	bool recalc;
+
+	int IterationCount;
+
 	/** Вычисление характеристики интервала
 
 	\param[in] p указатель на интервал, характеристику которого надо вычислить
@@ -150,10 +165,10 @@ protected:
 	\param[in] trial точка, которую необходимо сравнить с текущим оптимумом
 	\return true, если оптимум обновлён, иначе false
 	*/
-	virtual bool UpdateOptimumEstimation(const TTrial& trial) = 0;
+	virtual bool UpdateOptimumEstimation(const TTrial& trial);
 
 	/// Проверяет попала ли точка в окрестность глобального манимума
-	virtual bool CheckOptimumPoint(const TTrial& trial) = 0;
+	virtual bool CheckOptimumPoint(const TTrial& trial);
 
 public:
 
@@ -170,8 +185,8 @@ public:
 
 	/** Функция вызывается в начале проведения итерации
 	*/
-	virtual void InitIteration() = 0;
-	/** Вычисления точки очередной итерации
+	virtual void InitIteration();
+	/** Вычисления точки очередной итерации	
 
 	Результат записывается в CurTrial
 	*/
@@ -185,57 +200,151 @@ public:
 
 	\return истина, если критерий остановки выполнен; ложь - в противном случае.
 	*/
-	virtual bool CheckStopCondition() = 0;
+	virtual bool CheckStopCondition();
 
 	/** Вычисление функций задачи
 
 	Проводится испытание в точке из CurTrial, результат	записываются туда же
 	*/
-	virtual void CalculateFunction() = 0;
+	virtual void CalculateFunction();
 	/** Обновление поисковой информации
 	*/
-	virtual void RenewSearchData() = 0;
+	virtual void RenewSearchData();
 	/** Оценить текущее значение оптимума
 
 	\return истина, если оптимум изменился; ложь - в противном случае
 	*/
-	virtual bool EstimateOptimum() = 0;
+	virtual bool EstimateOptimum();
 	/** Функция вызывается в конце проведения итерации
 	*/
-	virtual void FinalizeIteration() = 0;
+	virtual void FinalizeIteration();
 	/** Получить число испытаний
 
 	\return число испытаний
 	*/
-	virtual int GetIterationCount() = 0;
+	virtual int GetIterationCount();
 	/** Получить текущую оценку оптимума
 
 	\return испытание, соответствующее текущему оптимуму
 	*/
-	virtual TTrial GetOptimEstimation() = 0;
+	virtual TTrial GetOptimEstimation();
 	/** Получить текущее испытание
 
 	\return текущее испытание
 	*/
-	virtual TTrial GetCurTrial() = 0;
+	virtual TTrial GetCurTrial();
 	/** Установить границы области поиска
 	*/
-	virtual void SetBounds() = 0;
+	virtual void SetBounds();
 	/**Сбор статистики
 
 	Функция возвращает общее число испытаний, выполненных при решении текущей задачи
 	\return общее число испытаний
 	*/
-	virtual int GetNumberOfTrials() = 0;
+	virtual int GetNumberOfTrials();
 	///Получить номер итерации с наилучшим решением
-	virtual int GetBestTrialIteration() = 0;
+	virtual int GetBestTrialIteration();
 	/**Функция записывает точки испытаний в файл
 
 	\param[in] fileName имя файла, в который будут записаны точки
 	*/
-	virtual void PrintPoints(const std::string& fileName) = 0;
+	virtual void PrintPoints(const std::string& fileName);
 
 	/// Возвращает достигнутую точность
-	virtual double GetAchievedAccuracy() = 0;
+	virtual double GetAchievedAccuracy();
 };
 
+bool IMethod::UpdateOptimumEstimation(const TTrial& trial)
+{
+	if (trial.FuncValue < BestTrial.FuncValue)
+	{
+		BestTrial = trial;
+		recalc = true;
+		return true;
+	}
+	else return false;
+}
+
+bool IMethod:: CheckOptimumPoint(const TTrial& trial)
+{
+	if (trial.x + eps >= pTask->GetOptimumPoint() && pTask->GetOptimumPoint() >= trial.x - eps)
+		return true;
+	else
+	    return false;
+}
+
+void IMethod:: InitIteration()
+{
+	IterationCount++;
+	recalc = false;
+}
+
+bool IMethod::CheckStopCondition()
+{
+	if (Trials[t].x - Trials[t - 1].x <= eps * (pTask->GetB() - pTask->GetA()))
+		return true;
+	else
+		return false;
+}
+
+void IMethod::CalculateFunction()
+{
+	CurTrial.FuncValue = pTask->CalculateFunction(CurTrial.x);
+}
+
+void IMethod::RenewSearchData()
+{
+	//std::vector <int>::iterator iter;
+	//iter = Trials.begin() + t;
+	Trials.insert(Trials.begin()+t, CurTrial); 
+}
+
+bool IMethod::EstimateOptimum()
+{
+	return recalc;
+}
+
+void IMethod:: FinalizeIteration()
+{
+	UpdateOptimumEstimation(CurTrial);
+}
+
+int IMethod::GetIterationCount()
+{
+	return IterationCount;
+}
+
+TTrial IMethod::GetOptimEstimation()
+{
+	return BestTrial;
+}
+
+TTrial IMethod::GetCurTrial()
+{
+	return CurTrial;
+}
+
+void IMethod::SetBounds()
+{
+
+}
+
+int IMethod::GetNumberOfTrials()
+{
+	return Trials.size();
+}
+
+int IMethod::GetBestTrialIteration()
+{
+	return BestTrial.IterationNumber;
+}
+
+double IMethod::GetAchievedAccuracy()
+{
+	return fabs(Trials[t].x - Trials[t - 1].x);
+}
+
+void IMethod:: PrintPoints(const std::string& fileName)
+{
+
+}
