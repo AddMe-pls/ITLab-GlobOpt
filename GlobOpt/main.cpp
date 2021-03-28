@@ -57,7 +57,29 @@ class TX2Problem : public IProblem
 
 class TSHProblem : public IProblem
 {
-
+protected:
+	// Коэффициенты для подсчета значения функции
+	double K[1000000], A[1000000], C[1000000];
+	//Оптимальная точка
+	double ox, oFuncVal;
+public:
+	TSHProblem()
+	{
+		for (long long int i = 0; i < 1000000; i++)
+		{
+			K[i] = rand() % (3 - 1 + 1) + 1;
+			A[i] = rand();
+			C[i] = rand() % (10 - 32767 + 1) + 32767;
+		}
+		IProblem* problem = this;
+		TTask task(problem);
+		IMethod* method = new BF(&task, 1000, 0.0001);
+		method->Solve();
+		TTrial opt;
+		opt = method->GetOptimEstimation();
+		ox = opt.x;
+		oFuncVal = opt.FuncValue;
+	}
 	///Инициализация задачи
 	virtual int Initialize()
 	{
@@ -76,7 +98,7 @@ class TSHProblem : public IProblem
 	*/
 	virtual int GetOptimumValue(double& value) const
 	{
-		value = 0;
+		value = oFuncVal;
 		return IProblem::OK;
 	}
 	/** Метод возвращает координаты точки глобального минимума целевой функции
@@ -85,11 +107,7 @@ class TSHProblem : public IProblem
 	*/
 	virtual int GetOptimumPoint(double& x) const
 	{
-		//x = 1;
-		IProblem* problem = new TSHProblem();
-		TTask task(problem);
-
-
+		x = ox;
 		return IProblem::OK;
 	}
 
@@ -100,13 +118,11 @@ class TSHProblem : public IProblem
 	*/
 	virtual double CalculateFunction(const double x) const
 	{
-		double res = 0, K = 0, A = 0, C = 0;
+		double res = 0;
+		long long int xi = x * 100000;
 		for (int i = 0; i < 10; i++)
 		{
-			K = rand() % (3 - 1 + 1) + 1;
-			A = rand();
-			C = rand() % (10 - 32767 + 1) + 32767;
-			res += 1 / (K * pow((x - A), 2) + C);
+			res += 1 / (K[xi] * pow((x - A[xi]), 2) + C[xi]);
 		}
 		return -res;
 	}
@@ -120,10 +136,45 @@ class TSHProblem : public IProblem
 
 class THLProblem : public IProblem
 {
-
+protected:
+	// Коэффициенты для подсчета значения функции
+	double A[100000], B[100000];
+	//Оптимальная точка
+	double ox, oFuncVal;
+public:
+	THLProblem()
+	{
+		for (long long int i = 0; i < 100000; i++)
+		{
+			A[i] = rand() % (1 + 1 + 1) + 1;
+			B[i] = rand() % (1 + 1 + 1) + 1;
+		}
+		//ox = 0.0;
+		//oFuncVal = 0.0;
+		IProblem* problem = this;
+		TTask task(problem);
+		IMethod* method = new BF(&task, 1000, 0.0001);
+		method->Solve();
+		TTrial opt;
+		opt = method->GetOptimEstimation();
+		ox = opt.x;
+		oFuncVal = opt.FuncValue;
+		delete problem;
+		delete method;
+	}
 	///Инициализация задачи
 	virtual int Initialize()
 	{
+		/*IProblem* problem = new THLProblem();
+		TTask task(problem);
+		IMethod* method = new BF(&task, 300, 0.001);
+		method->Solve();
+		TTrial opt;
+		opt = method->GetOptimEstimation();
+		ox = opt.x;
+		oFuncVal = opt.FuncValue;
+		delete problem;
+		delete method;*/
 		return IProblem::OK;
 	}
 
@@ -139,7 +190,7 @@ class THLProblem : public IProblem
 	*/
 	virtual int GetOptimumValue(double& value) const
 	{
-		value = 0;
+		value = oFuncVal;
 		return IProblem::OK;
 	}
 	/** Метод возвращает координаты точки глобального минимума целевой функции
@@ -148,9 +199,8 @@ class THLProblem : public IProblem
 	*/
 	virtual int GetOptimumPoint(double& x) const
 	{
-		x = 1;
+		x = ox;
 		return IProblem::OK;
-
 	}
 
 	/** Метод, вычисляющий функцию задачи
@@ -160,12 +210,11 @@ class THLProblem : public IProblem
 	*/
 	virtual double CalculateFunction(const double x) const
 	{
-		double res = 0, A = 0, B = 0;
+		double res = 0;
+		long long int xi = x * 100000;
 		for (int i = 0; i < 14; i++)
 		{
-			A = rand() % (1 + 1 + 1) + 1;
-			B = rand() % (1 + 1 + 1) + 1;
-			res += A* sin(2*M_PI*x*i) + B*cos(2*M_PI*x*i) ;
+			res += A[xi]* sin(2*M_PI*x*i) + B[xi]*cos(2*M_PI*x*i) ;
 		}
 		return res;
 	}
@@ -181,11 +230,10 @@ class THLProblem : public IProblem
 int main(int argc, char * argv[])
 {
 	//Объявляем указатель на базовый класс и присваиваем ему указатель на производный класс
-	IProblem* problem = new TX2Problem();
+	IProblem* problem = new THLProblem();
 	//Инициализируем задачу оптимизации
 	TTask task(problem);
 	//И используем ее в методе
-
 	//Для примера - печать таблицы значений функции
 	int size = 20;
 	double x = task.GetA();
@@ -206,6 +254,5 @@ int main(int argc, char * argv[])
 
 
 	delete problem;
-
 	return 0;
 }

@@ -40,8 +40,10 @@ void BF::FirstIteration()
 	Trials[1].FuncValue = yB;
 	Trials[0].IterationNumber = 1;
 	Trials[1].IterationNumber = 2;*/
-	Trials[0] = { xA, yA, 1 };
-	Trials[1] = { xB, yB, 2 };
+	//Trials[0] = { xA, yA, 1 };
+	//Trials[1] = { xB, yB, 2 };
+	Trials.push_back({ xA, yA, 1 });
+	Trials.push_back({ xB, yB, 2 });
 	CurTrial = { xB, yB, 2 };
 	BestTrial = { xB, yB, 2 };
 	t = 1;
