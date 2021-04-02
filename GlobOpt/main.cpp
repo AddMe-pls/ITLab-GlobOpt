@@ -55,31 +55,34 @@ class TX2Problem : public IProblem
 
 };
 
-int getRandomNumber(int min, int max)
+/*int getRandomNumber(int min, int max)
 {
 	static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
 	return static_cast<int>((double)rand() * fraction * (max - min + 1) + min);
-}
+}*/
 
 class TSHProblem : public IProblem
 {
 protected:
 	// Коэффициенты для подсчета значения функции
-	double K[1000000], A[1000000], C[1000000];
+	double K[10], A[10], C[10];
 	//Оптимальная точка
 	double ox, oFuncVal;
 public:
 	TSHProblem()
 	{
-		for (long long int i = 0; i < 1000000; i++)
+		for (int i = 0; i < 10; i++)
 		{
-			K[i] = rand() % (3 - 1 + 1) + 1;
-			A[i] = rand();
-			C[i] = rand() % (10 - 32767 + 1) + 32767;
+			//K[i] = rand() % (3 - 1 + 1) + 1;
+			//A[i] = rand();
+			//C[i] = rand() % (10 - 32767 + 1) + 32767;
+			K[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 2 + 1;
+			A[i] = static_cast<double>(rand());
+			C[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * (10 + RAND_MAX) - RAND_MAX; 
 		}
 		IProblem* problem = this;
 		TTask task(problem);
-		IMethod* method = new BF(&task, 100, 0.0001);
+		IMethod* method = new BF(&task, 100, 0.001);
 		method->Solve();
 		TTrial opt;
 		opt = method->GetOptimEstimation();
@@ -125,10 +128,10 @@ public:
 	virtual double CalculateFunction(const double x) const
 	{
 		double res = 0;
-		long long int xi = x * 100000;
-		for (int i = 1; i <= 10; i++)
+		//long long int xi = x * 100000;
+		for (int i = 0; i < 10; i++)
 		{
-			res += 1 / (K[xi] * pow((x - A[xi]), 2) + C[xi]);
+			res += 1 / (K[i] * (x - A[i]) * (x - A[i]) + C[i]);
 		}
 		return -res;
 	}
@@ -144,13 +147,13 @@ class THLProblem : public IProblem
 {
 protected:
 	// Коэффициенты для подсчета значения функции
-	double A[100001], B[100001];
+	double A[14], B[14];
 	//Оптимальная точка
 	double ox, oFuncVal;
 public:
 	THLProblem()
 	{
-		for (std::size_t i = 0; i <= 100000; i++)
+		for (std::size_t i = 0; i < 14; i++)
 		{
 			//(static_cast<double>rand()/static_cast<double>(RAND_MAX))*2-1
 			A[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 2 - 1;
@@ -164,7 +167,7 @@ public:
 		oFuncVal = 0.0;
 		IProblem* problem = this;
 		TTask task(problem);
-		IMethod* method = new BF(&task, 1000, 0.0001);
+		IMethod* method = new BF(&task, 1000, 0.001);
 		method->Solve();
 		TTrial opt;
 		opt = method->GetOptimEstimation();
@@ -222,10 +225,10 @@ public:
 	virtual double CalculateFunction(const double x) const
 	{
 		double res = 0;
-		long long int xi = x * 100000;
-		for (int i = 1; i <= 14; i++)
+		//long long int xi = x * 100000;
+		for (int i = 0; i < 14; i++)
 		{
-			res += A[xi]* sin(2*M_PI*x*i) + B[xi]*cos(2*M_PI*x*i) ;
+			res += A[i]* sin(2*M_PI*x*i) + B[i]*cos(2*M_PI*x*i) ;
 		}
 		return res;
 	}

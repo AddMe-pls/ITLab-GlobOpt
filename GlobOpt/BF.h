@@ -56,11 +56,13 @@ void BF::FirstIteration()
 
 void BF::DoIteration()
 {
-	double MaxR = -100000;
+	//double MaxR = -100000;
 	InitIteration();
 	CalculateIterationPoint();
 	CalculateFunction();
 	RenewSearchData();
+	double MaxR = -100000;
+
 	for (int i = 1; i < Trials.size(); i++)
 	{
 		double CurrR = CalculateR(i);
