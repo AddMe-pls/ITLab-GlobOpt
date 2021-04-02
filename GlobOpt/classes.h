@@ -281,7 +281,7 @@ void IMethod:: InitIteration()
 
 bool IMethod::CheckStopCondition()
 {
-	if (Trials[t].x - Trials[t - 1].x <= eps * (pTask->GetB() - pTask->GetA()))
+	if (fabs(Trials[t].x - Trials[t - 1].x) <= eps * (pTask->GetB() - pTask->GetA()))
 		return true;
 	else
 		return false;

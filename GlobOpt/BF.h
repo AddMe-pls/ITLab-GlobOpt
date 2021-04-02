@@ -44,10 +44,14 @@ void BF::FirstIteration()
 	//Trials[1] = { xB, yB, 2 };
 	Trials.push_back({ xA, yA, 1 });
 	Trials.push_back({ xB, yB, 2 });
+	if (yA < yB)
+		BestTrial = { xA, yA, 1 };
+	else
+		BestTrial = { xB, yB, 2 };
 	CurTrial = { xB, yB, 2 };
-	BestTrial = { xB, yB, 2 };
+	//BestTrial = { xB, yB, 2 };
 	t = 1;
-	IterationCount = 1;
+	//IterationCount = 1;
 }
 
 void BF::DoIteration()
@@ -77,5 +81,5 @@ void BF::Solve()
 
 void BF :: CalculateIterationPoint()
 {
-	CurTrial.x = 0.5 * (Trials[t - 1].x - Trials[t].x);
+	CurTrial.x = 0.5 * (Trials[t].x + Trials[t-1].x);
 }
