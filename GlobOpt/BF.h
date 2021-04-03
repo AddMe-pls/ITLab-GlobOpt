@@ -34,14 +34,6 @@ void BF::FirstIteration()
 	double xB = pTask->GetB();
 	double yA = pTask->CalculateFunction(xA);
 	double yB = pTask->CalculateFunction(xB);
-	/*Trials[0].x = xA;
-	Trials[1].x = xB;
-	Trials[0].FuncValue = yA;
-	Trials[1].FuncValue = yB;
-	Trials[0].IterationNumber = 1;
-	Trials[1].IterationNumber = 2;*/
-	//Trials[0] = { xA, yA, 1 };
-	//Trials[1] = { xB, yB, 2 };
 	Trials.push_back({ xA, yA, 1 });
 	Trials.push_back({ xB, yB, 2 });
 	if (yA < yB)
@@ -49,14 +41,11 @@ void BF::FirstIteration()
 	else
 		BestTrial = { xB, yB, 2 };
 	CurTrial = { xB, yB, 2 };
-	//BestTrial = { xB, yB, 2 };
 	t = 1;
-	//IterationCount = 1;
 }
 
 void BF::DoIteration()
 {
-	//double MaxR = -100000;
 	InitIteration();
 	CalculateIterationPoint();
 	CalculateFunction();

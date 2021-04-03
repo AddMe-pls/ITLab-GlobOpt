@@ -1,6 +1,5 @@
 #define _USE_MATH_DEFINES
 
-//#include "classes.h"
 #include "BF.h"
 
 //Функция y = (x-1)(x-1) при x \in [-1,2]
@@ -55,11 +54,6 @@ class TX2Problem : public IProblem
 
 };
 
-/*int getRandomNumber(int min, int max)
-{
-	static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
-	return static_cast<int>((double)rand() * fraction * (max - min + 1) + min);
-}*/
 
 class TSHProblem : public IProblem
 {
@@ -73,12 +67,9 @@ public:
 	{
 		for (int i = 0; i < 10; i++)
 		{
-			//K[i] = rand() % (3 - 1 + 1) + 1;
-			//A[i] = rand();
-			//C[i] = rand() % (10 - 32767 + 1) + 32767;
 			K[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 2 + 1;
-			A[i] = static_cast<double>(rand());
-			C[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * (10 + RAND_MAX) - RAND_MAX; 
+			A[i] = (static_cast<double>(rand())/ static_cast<double>(RAND_MAX)) * 10;
+			C[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 10; 
 		}
 		IProblem* problem = this;
 		TTask task(problem);
@@ -107,7 +98,7 @@ public:
 	*/
 	virtual int GetOptimumValue(double& value) const
 	{
-		value = oFuncVal;
+		value = oFuncVal; //HUGE_VAL;
 		return IProblem::OK;
 	}
 	/** Метод возвращает координаты точки глобального минимума целевой функции
@@ -128,7 +119,6 @@ public:
 	virtual double CalculateFunction(const double x) const
 	{
 		double res = 0;
-		//long long int xi = x * 100000;
 		for (int i = 0; i < 10; i++)
 		{
 			res += 1 / (K[i] * (x - A[i]) * (x - A[i]) + C[i]);
@@ -155,13 +145,8 @@ public:
 	{
 		for (std::size_t i = 0; i < 14; i++)
 		{
-			//(static_cast<double>rand()/static_cast<double>(RAND_MAX))*2-1
 			A[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 2 - 1;
 			B[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 2 - 1;
-			//A[i] = rand() % 3 - 1;
-			//B[i] = rand() % 3 - 1;
-			//A[i] = getRandomNumber(-1, 1);
-			//B[i] = getRandomNumber(-1, 1);
 		}
 		ox = 0.0;
 		oFuncVal = 0.0;
@@ -173,22 +158,10 @@ public:
 		opt = method->GetOptimEstimation();
 		ox = opt.x;
 		oFuncVal = opt.FuncValue;
-		//delete problem;
-		//delete method;
 	}
 	///Инициализация задачи
 	virtual int Initialize()
 	{
-		/*IProblem* problem = new THLProblem();
-		TTask task(problem);
-		IMethod* method = new BF(&task, 300, 0.001);
-		method->Solve();
-		TTrial opt;
-		opt = method->GetOptimEstimation();
-		ox = opt.x;
-		oFuncVal = opt.FuncValue;
-		delete problem;
-		delete method;*/
 		return IProblem::OK;
 	}
 
@@ -225,7 +198,6 @@ public:
 	virtual double CalculateFunction(const double x) const
 	{
 		double res = 0;
-		//long long int xi = x * 100000;
 		for (int i = 0; i < 14; i++)
 		{
 			res += A[i]* sin(2*M_PI*x*i) + B[i]*cos(2*M_PI*x*i) ;
@@ -244,7 +216,7 @@ public:
 int main(int argc, char * argv[])
 {
 	//Объявляем указатель на базовый класс и присваиваем ему указатель на производный класс
-	IProblem* problem = new THLProblem();
+	IProblem* problem = new TSHProblem();
 	//Инициализируем задачу оптимизации
 	TTask task(problem);
 	//И используем ее в методе
