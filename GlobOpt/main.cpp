@@ -62,14 +62,18 @@ protected:
 	double K[10], A[10], C[10];
 	//Оптимальная точка
 	double ox, oFuncVal;
+	//Seed для выбора определенной задачи
+	int seed;
 public:
-	TSHProblem()
+	TSHProblem(int _seed = 1)
 	{
+		seed = _seed;
+		srand(_seed);
 		for (int i = 0; i < 10; i++)
 		{
-			K[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 2 + 1;
+			K[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 20 + 5;
 			A[i] = (static_cast<double>(rand())/ static_cast<double>(RAND_MAX)) * 10;
-			C[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 10; 
+			C[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 0.2 + 1; 
 		}
 		IProblem* problem = this;
 		TTask task(problem);
@@ -140,9 +144,13 @@ protected:
 	double A[14], B[14];
 	//Оптимальная точка
 	double ox, oFuncVal;
+	//Seed для выбора определенной задачи
+	int seed;
 public:
-	THLProblem()
+	THLProblem(int _seed = 1)
 	{
+		seed = _seed;
+		srand(_seed);
 		for (std::size_t i = 0; i < 14; i++)
 		{
 			A[i] = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) * 2 - 1;
